@@ -1,4 +1,13 @@
 
+count1_edit={}
+operation=""
+
+def add_or_increment(count1_edit, key):
+    if key in count1_edit:
+        count1_edit[key] += 1
+    else:
+        count1_edit[key] = 1
+
 def find_extra_chars_with_positions(misspelled, candidate):
     from collections import Counter
     len_ms, len_cd = len(misspelled), len(candidate)
@@ -15,6 +24,7 @@ def find_extra_chars_with_positions(misspelled, candidate):
     # Count the frequency of each character in word1
     count1 = Counter(word1)
     extra_chars_with_positions = []
+    
 
     # Iterate over word2 to find extra characters and their positions
     for i, char in enumerate(word2):
@@ -22,7 +32,18 @@ def find_extra_chars_with_positions(misspelled, candidate):
             count1[char] -= 1
         else:
             extra_chars_with_positions.append((char, i,operation))
+            # adding to count_edit disctionary
+            if operation ==  'deleted':
+                key = word2[i - 1] + "|" + word2[i - 1] + char 
+                print("key = ",key)
+                add_or_increment(count1_edit, key)
+            elif  operation == 'inserted':
+                key = char  + "|" + str(i)
+                add_or_increment(count1_edit, key)
 
+            
+            
+            
     return extra_chars_with_positions        
         
 
@@ -45,11 +66,20 @@ def find_subst_transp(misspelled, candidate):
                 # Check for transpositions
                 if (i + 1 < len_ms and i + 1 < len_cd and
                     word1[i] == word2[i + 1] and word1[i + 1] == word2[i]):
+                    operation='transposition'
                     differences["transpositions"].append((i, word1[i], word1[i + 1], word2[i], word2[i + 1]))
+                    key = word1[i] + word1[i + 1] +'|' + word2[i] + word2[i + 1]
+                    #print("key = ",key)
+                    add_or_increment(count1_edit, key)
                     i += 1  # Skip the next character since we detected a transposition
                 else:
                     # Substitution
+                    operation='substitution'
                     differences["substitutions"].append((i, char1, char2))
+                    key = char1 + "|" + char2
+                    add_or_increment(count1_edit, key)
+                    #print("key = ",key)
+
             i += 1 
     return differences
     
@@ -58,22 +88,23 @@ def find_subst_transp(misspelled, candidate):
 misspelled = "acress"
 candidate = "acres"
 
+
 if len(misspelled) == len(candidate):
      diffs=find_subst_transp(misspelled, candidate)
-     print("\nSubstitutions (position, word1_char, word2_char):")
+     #print("\nSubstitutions (position, word1_char, word2_char):")
      for substitution in diffs["substitutions"]:
           print(substitution)
 
-     print("\nTranspositions (position, word1_char1, word1_char2, word2_char1, word2_char2):")
+     #print("\nTranspositions (position, word1_char1, word1_char2, word2_char1, word2_char2):")
      for transposition in diffs["transpositions"]:
           print(transposition)
 else:
      extra_chars_with_positions = find_extra_chars_with_positions(misspelled, candidate)
-     print("Extra characters in word2 that are not in word1 (character, position):")
+     #print("Extra characters in word2 that are not in word1 (character, position):")
      print(extra_chars_with_positions)
 
 
-
+print (count1_edit)
 
 
 """
