@@ -81,7 +81,10 @@ def compare_build_cnt(misspelled, candidates):
                 extra_chars_with_positions.append((char, i, operation))
                 # adding to count_edit dictionary
                 if operation == 'deleted':
-                    key = word2[i - 1] + "|" + word2[i - 1] + char
+                    if i==0:  # If the character deleted is the begining character of that word
+                        key = word2[i + 1]  + "|" + char + word2[i + 1] 
+                    else:
+                        key = word2[i - 1] + "|" + word2[i - 1] + char 
                     #print("key = ", key)
                     add_or_increment(candidate,count1_edit, key)
                 elif operation == 'inserted':
@@ -192,6 +195,7 @@ for  ms,cd in error_and_candidates.items():
             #print(ms,c,e_given_char,cnt_e_given_char,prob_candidate_in_corpus)
             suffix = e_given_char.split('|')[1]
             cnt_denominator = substring_counts[suffix]
+
             print(ms,c,e_given_char,cnt_e_given_char,prob_candidate_in_corpus,cnt_denominator)
             #prob_error_model = (cnt_e_given_char/ )*prob_candidate_in_corpus
 
